@@ -1,0 +1,25 @@
+- name: Install required packages
+  apt:
+    name:
+      - nginx
+    state: present
+    update_cache: yes
+
+- name: Remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx
+
+- name: Deploy proxy configuration
+  template:
+    src: proxy.conf.j2
+    dest: /etc/nginx/sites-available/proxy.conf
+  notify: restart nginx
+
+- name: Enable proxy configuration
+  file:
+    src: /etc/nginx/sites-available/proxy.conf
+    dest: /etc/nginx/sites-enabled/proxy.conf
+    state: link
+  notify: restart nginx

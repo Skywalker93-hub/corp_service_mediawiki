@@ -1,0 +1,19 @@
+services:
+  openvpn:
+    image: openvpn/openvpn-as:latest
+    container_name: openvp
+    restart: unless-stopped
+    ports:
+      - "943:943"
+      - "443:443"
+      - "1194:1194/udp"
+    volumes:
+      - /opt/openvpn/data:/openvpn
+    cap_add:
+      - NET_ADMIN
+      - MKNOD
+    devices:
+      - /dev/net/tun
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4

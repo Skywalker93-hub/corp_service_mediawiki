@@ -1,6 +1,26 @@
-[openvpn]
-openvpn ansible_host=<PUBLIC_IP_OPENVPN>
+all:
+  vars:
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: /Users/kristinadreer/.ssh/id_ed25519
 
-[all:vars]
-ansible_user=ubuntu
-ansible_ssh_private_key_file=~/.ssh/id_ed25519
+  children:
+    vpn:
+      hosts:
+        openvpn:
+          ansible_host: 54.170.98.83
+
+    proxy:
+      hosts:
+        nginxproxy1:
+          ansible_host: 10.10.2.7
+        nginxproxy2:
+          ansible_host: 10.10.3.5
+
+    web:
+      hosts:
+        nginxweb1:
+          ansible_host: 10.10.2.14
+        nginxweb2:
+          ansible_host: 10.10.3.14
+
+

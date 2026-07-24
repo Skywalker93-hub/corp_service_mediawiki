@@ -4,3 +4,4 @@
 .terraform.lock.hcl
 keys.env
 .DS_Store
+terraform.tfstate.backup

@@ -1,0 +1,94 @@
+- name: Install required packages
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - mc
+      - net-tools
+    state: present
+    update_cache: yes
+
+- name: Remove broken docker apt repo if present
+  file:
+    path: /etc/apt/sources.list.d/docker.list
+    state: absent
+
+- name: Install Docker
+  apt:
+    name:
+      - docker.io
+      - docker-compose-v2
+    state: present
+    update_cache: yes
+
+- name: Configure Docker daemon registry mirror
+  copy:
+    content: |
+      {
+        "registry-mirrors": ["https://cr.yandex/mirror"]
+      }
+    dest: /etc/docker/daemon.json
+    mode: "0644"
+
+- name: Restart Docker service
+  service:
+    name: docker
+    state: restarted
+
+- name: Add user to docker group
+  user:
+    name: ubuntu
+    groups: docker
+    append: yes
+
+- name: Create OpenVPN directory
+  file:
+    path: /opt/openvpn
+    state: directory
+    mode: "0755"
+
+- name: Create OpenVPN data
+  file:
+    path: /opt/openvpn/data
+    state: directory
+    mode: "0755"
+
+- name: Copy docker-compose.yml
+  copy:
+    src: docker-compose.yml
+    dest: /opt/openvpn/docker-compose.yml
+    mode: "0644"
+
+- name: Start OpenVPN container
+  command: docker compose up -d
+  args:
+    chdir: /opt/openvpn
+
+- name: Wait for OpenVPN socket to initialize
+  pause:
+    seconds: 15
+
+- name: Set OpenVPN Access Server public host.name
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "host.name" --value "{{ ansible_host }}" ConfigPut
+
+- name: Set OpenVPN Access Server private network routing
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.0" --value "10.10.0.0/16" ConfigPut
+
+- name: Set OpenVPN Access Server private access to nat
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_access" --value "nat" ConfigPut
+
+- name: Set OpenVPN Access Server split tunneling (disable default route)
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.client.routing.reroute_gw" --value "false" ConfigPut
+
+- name: Set OpenVPN Access Server custom DNS routing
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.client.routing.reroute_dns" --value "custom" ConfigPut
+
+- name: Set OpenVPN Access Server primary DNS
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.server.dhcp_option.dns.0" --value "8.8.8.8" ConfigPut
+
+- name: Set OpenVPN Access Server secondary DNS
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.server.dhcp_option.dns.1" --value "8.8.4.4" ConfigPut
+
+- name: Restart OpenVPN Access Server internal service
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli Start

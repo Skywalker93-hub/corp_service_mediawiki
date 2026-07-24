@@ -1,0 +1,15 @@
+upstream backend {
+{% for host in groups['web'] %}
+    server {{ hostvars[host]['ansible_host'] }}:80;
+{% endfor %}
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_pass http://backend;
+    }
+}

@@ -1,4 +1,9 @@
-- hosts: all
+- hosts: proxy
   become: true
   roles:
-    - openvpn
+    - proxy
+
+- hosts: web
+  become: true
+  roles:
+    - web
