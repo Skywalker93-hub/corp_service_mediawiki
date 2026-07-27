@@ -37,6 +37,14 @@ resource "aws_security_group" "sg_openvpn" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "Allow internal VPC traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.10.0.0/16"]
+  }
+
   egress {
     description = "Allow all outgoing traffic"
     from_port   = 0
@@ -86,6 +94,14 @@ resource "aws_security_group" "sg_others" {
     to_port     = 2049
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow internal VPC traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.10.0.0/16"]
   }
 
   egress {
