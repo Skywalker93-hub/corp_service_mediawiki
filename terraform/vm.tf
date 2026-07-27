@@ -18,6 +18,11 @@ resource "aws_instance" "openvpn" {
   }
 }
 
+resource "aws_eip_association" "eip_assoc_openvpn" {
+  instance_id   = aws_instance.openvpn.id
+  allocation_id = aws_eip.openvpn_static_ip.id
+}
+
 // EC2 Instance "Nginx-proxy1"
 resource "aws_instance" "nginxproxy1" {
   ami                    = data.aws_ami.ubuntu_2404.id
@@ -61,7 +66,7 @@ resource "aws_instance" "nginxweb1" {
   ami                    = data.aws_ami.ubuntu_2404.id
   instance_type          = "t3.medium"
   subnet_id              = aws_subnet.subnet2.id
-  vpc_security_group_ids = [aws_security_group.sg_others.id]
+  vpc_security_group_ids = [data.aws_security_group.default.id]
   key_name               = aws_key_pair.deployer.key_name
 
   root_block_device {
@@ -80,7 +85,7 @@ resource "aws_instance" "nginxweb2" {
   ami                    = data.aws_ami.ubuntu_2404.id
   instance_type          = "t3.medium"
   subnet_id              = aws_subnet.subnet3.id
-  vpc_security_group_ids = [aws_security_group.sg_others.id]
+  vpc_security_group_ids = [data.aws_security_group.default.id]
   key_name               = aws_key_pair.deployer.key_name
 
   root_block_device {

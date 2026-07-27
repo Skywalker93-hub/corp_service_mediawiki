@@ -123,3 +123,8 @@ resource "aws_security_group" "sg_alb" {
     Name = "sg-alb"
   }
 }
+
+// Security Group for webs
+data "aws_security_group" "default" {
+  id = "sg-00de35990bf2954e4"
+}

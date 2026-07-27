@@ -13,7 +13,7 @@ resource "aws_lb" "proxy_alb" {
   enable_deletion_protection = false
 
   tags = {
-    Name = "proxy-alb-int"
+    Name = "mediawiki"
   }
 }
 

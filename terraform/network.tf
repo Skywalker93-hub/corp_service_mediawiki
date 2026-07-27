@@ -64,6 +64,13 @@ resource "aws_eip" "nat" {
   }
 }
 
+resource "aws_eip" "openvpn_static_ip" {
+  domain = "vpc"
+  tags = {
+    Name = "openvpn-eip-a"
+  }
+}
+
 // NAT Gateway A
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
