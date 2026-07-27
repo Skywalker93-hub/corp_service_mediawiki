@@ -7,7 +7,7 @@ all:
     vpn:
       hosts:
         openvpn:
-          ansible_host: 54.170.98.83
+          ansible_host: 34.254.237.127
 
     proxy:
       hosts:

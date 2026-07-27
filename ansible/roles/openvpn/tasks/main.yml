@@ -66,8 +66,12 @@
     chdir: /opt/openvpn
 
 - name: Wait for OpenVPN socket to initialize
-  pause:
-    seconds: 15
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli status
+  register: sacli_status
+  until: sacli_status.rc == 0
+  retries: 30
+  delay: 5
+  changed_when: false
 
 - name: Set OpenVPN Access Server public host.name
   command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "host.name" --value "{{ ansible_host }}" ConfigPut
