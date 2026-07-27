@@ -15,5 +15,5 @@ services:
     devices:
       - /dev/net/tun
     dns:
-      - 8.8.8.8
+      - 10.10.0.2
       - 8.8.4.4

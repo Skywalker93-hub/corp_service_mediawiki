@@ -89,7 +89,7 @@
   command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.client.routing.reroute_dns" --value "custom" ConfigPut
 
 - name: Set OpenVPN Access Server primary DNS
-  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.server.dhcp_option.dns.0" --value "8.8.8.8" ConfigPut
+  command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.server.dhcp_option.dns.0" --value "10.10.0.2" ConfigPut
 
 - name: Set OpenVPN Access Server secondary DNS
   command: docker exec openvp /usr/local/openvpn_as/scripts/sacli --key "vpn.server.dhcp_option.dns.1" --value "8.8.4.4" ConfigPut

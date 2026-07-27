@@ -98,3 +98,41 @@ resource "aws_instance" "nginxweb2" {
     Name = "nginxweb2"
   }
 }
+
+// EC2 Instance PostgreSQl-1"
+resource "aws_instance" "postqresql1" {
+  ami                    = data.aws_ami.ubuntu_2404.id
+  instance_type          = "t3.medium"
+  subnet_id              = aws_subnet.subnet2.id
+  vpc_security_group_ids = [data.aws_security_group.default.id]
+  key_name               = aws_key_pair.deployer.key_name
+
+  root_block_device {
+    volume_size           = 12
+    volume_type           = "gp3"
+    delete_on_termination = true
+  }
+
+  tags = {
+    Name = "postqresql1"
+  }
+}
+
+// EC2 Instance PostgreSQl-2"
+resource "aws_instance" "postqresql2" {
+  ami                    = data.aws_ami.ubuntu_2404.id
+  instance_type          = "t3.medium"
+  subnet_id              = aws_subnet.subnet3.id
+  vpc_security_group_ids = [data.aws_security_group.default.id]
+  key_name               = aws_key_pair.deployer.key_name
+
+  root_block_device {
+    volume_size           = 12
+    volume_type           = "gp3"
+    delete_on_termination = true
+  }
+
+  tags = {
+    Name = "postqresql2"
+  }
+}
