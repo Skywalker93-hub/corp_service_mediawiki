@@ -136,3 +136,22 @@ resource "aws_instance" "postqresql2" {
     Name = "postqresql2"
   }
 }
+
+// EC2 Instance Zabbix"
+resource "aws_instance" "zabbix" {
+  ami                    = data.aws_ami.ubuntu_2404.id
+  instance_type          = "t3.medium"
+  subnet_id              = aws_subnet.subnet2.id
+  vpc_security_group_ids = [aws_security_group.sg_others.id, data.aws_security_group.default.id]
+  key_name               = aws_key_pair.deployer.key_name
+
+  root_block_device {
+    volume_size           = 12
+    volume_type           = "gp3"
+    delete_on_termination = true
+  }
+
+  tags = {
+    Name = "zabbix"
+  }
+}
