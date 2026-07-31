@@ -31,9 +31,8 @@ resource "aws_route_table" "rt" {
     Name = "rt"
   }
 }
-
-// Zona 1a
-// Subnet-1 (Public A)
+ 
+// Zona 1a: Subnet-1 (Public A)
 resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.my_net.id
   cidr_block              = "10.10.1.0/24"
@@ -96,8 +95,7 @@ resource "aws_route_table" "private_rt" {
 }
 
 
-// Zona 1b 
-// Public Subnet B
+// Zona 1b: Public Subnet B
 resource "aws_subnet" "public_subnet_b" {
   vpc_id                  = aws_vpc.my_net.id
   cidr_block              = "10.10.5.0/24"
@@ -120,9 +118,7 @@ resource "aws_subnet" "subnet2" {
   }
 }
 
-
-// Zona 1c 
-// Public Subnet C
+// Zona 1c: Public Subnet C
 resource "aws_subnet" "public_subnet_c" {
   vpc_id                  = aws_vpc.my_net.id
   cidr_block              = "10.10.6.0/24"
@@ -134,7 +130,7 @@ resource "aws_subnet" "public_subnet_c" {
   }
 }
 
-// Subnet-3 (Private C)
+// Subnet-3  
 resource "aws_subnet" "subnet3" {
   vpc_id            = aws_vpc.my_net.id
   cidr_block        = "10.10.3.0/28"
