@@ -26,10 +26,11 @@ resource "aws_lb_target_group" "proxy_alb_tg" {
 
   health_check {
     protocol            = "HTTP"
-    path                = "/"
+    path                = "/index.php?title=Main_Page"
     interval            = 30
     healthy_threshold   = 3
     unhealthy_threshold = 3
+    matcher             = "200,301"
   }
 
   tags = {

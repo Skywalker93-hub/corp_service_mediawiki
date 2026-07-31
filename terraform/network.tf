@@ -32,7 +32,7 @@ resource "aws_route_table" "rt" {
   }
 }
 
-// eu-west-1a
+// Zona 1a
 // Subnet-1 (Public A)
 resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.my_net.id
@@ -96,7 +96,7 @@ resource "aws_route_table" "private_rt" {
 }
 
 
-// eu-west-1b 
+// Zona 1b 
 // Public Subnet B
 resource "aws_subnet" "public_subnet_b" {
   vpc_id                  = aws_vpc.my_net.id
@@ -121,7 +121,7 @@ resource "aws_subnet" "subnet2" {
 }
 
 
-// eu-west-1c 
+// Zona 1c 
 // Public Subnet C
 resource "aws_subnet" "public_subnet_c" {
   vpc_id                  = aws_vpc.my_net.id
