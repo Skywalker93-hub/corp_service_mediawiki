@@ -68,6 +68,7 @@ resource "aws_instance" "nginxweb1" {
   subnet_id              = aws_subnet.subnet2.id
   vpc_security_group_ids = [aws_security_group.sg_others.id, data.aws_security_group.default.id]
   key_name               = aws_key_pair.deployer.key_name
+  iam_instance_profile   = "instanceRole"
 
   root_block_device {
     volume_size           = 12
@@ -87,6 +88,7 @@ resource "aws_instance" "nginxweb2" {
   subnet_id              = aws_subnet.subnet3.id
   vpc_security_group_ids = [aws_security_group.sg_others.id, data.aws_security_group.default.id]
   key_name               = aws_key_pair.deployer.key_name
+  iam_instance_profile   = "instanceRole"
 
   root_block_device {
     volume_size           = 12

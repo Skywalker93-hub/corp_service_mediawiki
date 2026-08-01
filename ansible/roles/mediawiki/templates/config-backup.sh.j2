@@ -1,0 +1,5 @@
+#!/bin/bash
+DATE=$(date +%F_%H-%M)
+tar -czf /tmp/config-backup-{{ inventory_hostname }}-$DATE.tar.gz /var/www/html/mediawiki-1.42.1/LocalSettings.php /etc/nginx /etc/haproxy
+aws s3 cp /tmp/config-backup-{{ inventory_hostname }}-$DATE.tar.gz s3://mediawiki-test-backup/mediawiki/
+rm /tmp/config-backup-{{ inventory_hostname }}-$DATE.tar.gz

@@ -23,4 +23,11 @@ all:
         nginxweb2:
           ansible_host: 10.10.3.14
 
+    db:
+      hosts:
+        postgresql1:
+          ansible_host: 10.10.2.11
+        postgresql2:
+          ansible_host: 10.10.3.10
+
 

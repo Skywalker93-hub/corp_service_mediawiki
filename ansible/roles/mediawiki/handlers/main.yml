@@ -1,0 +1,19 @@
+---
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Restart haproxy
+  service:
+    name: haproxy
+    state: restarted
+
+- name: Restart php-fpm
+  service:
+    name: php8.3-fpm
+    state: restarted
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes

@@ -58,7 +58,7 @@ resource "aws_security_group" "sg_openvpn" {
   }
 }
 
-// Security Group for OpenVPN
+// Security Group for others
 resource "aws_security_group" "sg_others" {
   name        = "sg_others"
   description = "sg_others"
@@ -88,7 +88,7 @@ resource "aws_security_group" "sg_others" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-   ingress {
+  ingress {
     description = "NFS"
     from_port   = 2049
     to_port     = 2049

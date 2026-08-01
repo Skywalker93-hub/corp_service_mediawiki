@@ -1,0 +1,17 @@
+---
+- hosts: db
+  become: true
+  tasks:
+    - name: Ensure HAProxy service is stopped and disabled on DB nodes
+      systemd:
+        name: haproxy
+        state: stopped
+        enabled: false
+      ignore_errors: true
+
+    - name: Remove HAProxy package and configuration from DB nodes
+      apt:
+        name: haproxy
+        state: absent
+        purge: yes
+      ignore_errors: true

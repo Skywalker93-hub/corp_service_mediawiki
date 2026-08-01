@@ -1,6 +1,42 @@
-- name: Install required packages
+---
+- name: Update apt cache and install required packages
   apt:
     name:
       - nginx
+      - haproxy
+      - php8.3-fpm
+      - php-pgsql
+      - php-intl
+      - php-mbstring
+      - php-xml
+      - php-apcu
+      - php-gd
+      - php-curl
+      - imagemagick
+      - unzip
+      - nfs-common
     state: present
     update_cache: yes
+
+- name: Check if awscli is installed
+  stat:
+    path: /usr/local/bin/aws
+  register: awscli_bin
+
+- name: Download and install awscli v2
+  unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp
+    remote_src: yes
+  when: not awscli_bin.stat.exists
+
+- name: Run awscli installer
+  command: /tmp/aws/install
+  args:
+    creates: /usr/local/bin/aws
+  when: not awscli_bin.stat.exists
+
+- name: Clean up awscli installer
+  file:
+    path: /tmp/aws
+    state: absent

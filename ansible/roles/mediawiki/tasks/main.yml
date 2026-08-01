@@ -1,0 +1,159 @@
+---
+- name: Ensure MediaWiki web root exists
+  file:
+    path: /var/www/html/mediawiki-1.42.1
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Check if MediaWiki is already downloaded
+  stat:
+    path: /var/www/html/mediawiki-1.42.1/index.php
+  register: mediawiki_installed
+
+- name: Download and extract MediaWiki
+  unarchive:
+    src: https://releases.wikimedia.org/mediawiki/1.42/mediawiki-1.42.1.tar.gz
+    dest: /var/www/html
+    remote_src: yes
+    creates: /var/www/html/mediawiki-1.42.1/index.php
+    owner: www-data
+    group: www-data
+  when: not mediawiki_installed.stat.exists
+
+- name: Ensure correct ownership of MediaWiki directory
+  file:
+    path: /var/www/html/mediawiki-1.42.1
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: yes
+  when: not mediawiki_installed.stat.exists
+
+- name: Deploy LocalSettings.php
+  template:
+    src: LocalSettings.php.j2
+    dest: /var/www/html/mediawiki-1.42.1/LocalSettings.php
+    owner: www-data
+    group: www-data
+    mode: '0640'
+
+- name: Ensure EFS mount directory exists
+  file:
+    path: /var/www/html/mediawiki-1.42.1/images
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Mount EFS volume for MediaWiki images
+  mount:
+    path: /var/www/html/mediawiki-1.42.1/images
+    src: fs-0bb7a3d6c19aa38cd.efs.eu-west-1.amazonaws.com:/mediawiki
+    fstype: nfs4
+    opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev
+    state: mounted
+
+- name: Deploy Nginx MediaWiki configuration
+  template:
+    src: web.conf.j2
+    dest: /etc/nginx/sites-available/web.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart nginx
+
+- name: Enable Nginx MediaWiki site
+  file:
+    src: /etc/nginx/sites-available/web.conf
+    dest: /etc/nginx/sites-enabled/web.conf
+    state: link
+  notify: Restart nginx
+
+- name: Remove default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart nginx
+
+- name: Deploy HAProxy configuration
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: haproxy
+    group: haproxy
+    mode: '0644'
+  notify: Restart haproxy
+
+- name: Ensure backup scripts directory exists
+  file:
+    path: /opt/backup-scripts
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy backup script
+  template:
+    src: bd-backup.sh.j2
+    dest: /opt/backup-scripts/bd-backup.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy backup systemd service
+  template:
+    src: backup.service.j2
+    dest: /etc/systemd/system/backup.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd daemon
+
+- name: Deploy backup systemd timer
+  template:
+    src: backup.timer.j2
+    dest: /etc/systemd/system/backup.timer
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd daemon
+
+- name: Enable and start backup timer
+  systemd:
+    name: backup.timer
+    enabled: yes
+    state: started
+
+- name: Deploy config backup script
+  template:
+    src: config-backup.sh.j2
+    dest: /opt/backup-scripts/config-backup.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy config backup systemd service
+  template:
+    src: config-backup.service.j2
+    dest: /etc/systemd/system/config-backup.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd daemon
+
+- name: Deploy config backup systemd timer
+  template:
+    src: config-backup.timer.j2
+    dest: /etc/systemd/system/config-backup.timer
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd daemon
+
+- name: Enable and start config backup timer
+  systemd:
+    name: config-backup.timer
+    enabled: yes
+    state: started

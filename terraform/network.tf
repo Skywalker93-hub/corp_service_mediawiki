@@ -9,7 +9,7 @@ resource "aws_vpc" "my_net" {
   }
 }
 
-// Create Internet Gateway
+// Internet Gateway for public subnets
 resource "aws_internet_gateway" "my_gw" {
   vpc_id = aws_vpc.my_net.id
 
@@ -18,7 +18,7 @@ resource "aws_internet_gateway" "my_gw" {
   }
 }
 
-// Create Route Table
+// Route Table for Internet Gateway   
 resource "aws_route_table" "rt" {
   vpc_id = aws_vpc.my_net.id
 
@@ -31,8 +31,48 @@ resource "aws_route_table" "rt" {
     Name = "rt"
   }
 }
- 
-// Zona 1a: Subnet-1 (Public A)
+
+// NAT Gateway for private subnets
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.subnet1.id
+  tags = {
+    Name = "nat-gw-a"
+  }
+  depends_on = [aws_internet_gateway.my_gw]
+}
+
+// Route Table for NAT Gateway
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.my_net.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
+
+  tags = {
+    Name = "private-rt-a"
+  }
+}
+
+// Elastic IP for NAT Gateway
+resource "aws_eip" "nat" {
+  domain = "vpc"
+  tags = {
+    Name = "nat-eip-a"
+  }
+}
+
+// Elastic IP for OpenVPN EC2
+resource "aws_eip" "openvpn_static_ip" {
+  domain = "vpc"
+  tags = {
+    Name = "openvpn-eip-a"
+  }
+}
+
+// Zona 1a: Public Subnet A
 resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.my_net.id
   cidr_block              = "10.10.1.0/24"
@@ -55,45 +95,6 @@ resource "aws_subnet" "private_subnet_a" {
   }
 }
 
-// Elastic IP for NAT A
-resource "aws_eip" "nat" {
-  domain = "vpc"
-  tags = {
-    Name = "nat-eip-a"
-  }
-}
-
-resource "aws_eip" "openvpn_static_ip" {
-  domain = "vpc"
-  tags = {
-    Name = "openvpn-eip-a"
-  }
-}
-
-// NAT Gateway A
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.subnet1.id
-  tags = {
-    Name = "nat-gw-a"
-  }
-  depends_on = [aws_internet_gateway.my_gw]
-}
-
-// Private Route Table A
-resource "aws_route_table" "private_rt" {
-  vpc_id = aws_vpc.my_net.id
-
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat.id
-  }
-
-  tags = {
-    Name = "private-rt-a"
-  }
-}
-
 
 // Zona 1b: Public Subnet B
 resource "aws_subnet" "public_subnet_b" {
@@ -107,7 +108,7 @@ resource "aws_subnet" "public_subnet_b" {
   }
 }
 
-// Subnet-2 (Private B)
+// Private Subnet B
 resource "aws_subnet" "subnet2" {
   vpc_id            = aws_vpc.my_net.id
   cidr_block        = "10.10.2.0/28"
@@ -130,7 +131,7 @@ resource "aws_subnet" "public_subnet_c" {
   }
 }
 
-// Subnet-3  
+// Private Subnet C
 resource "aws_subnet" "subnet3" {
   vpc_id            = aws_vpc.my_net.id
   cidr_block        = "10.10.3.0/28"
@@ -140,7 +141,6 @@ resource "aws_subnet" "subnet3" {
     Name = "private_subnet_c"
   }
 }
-
 
 
 // Public Associations

@@ -1,0 +1,7 @@
+---
+- hosts: web
+  become: true
+  roles:
+    - base
+    - web
+    - mediawiki

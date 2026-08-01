@@ -1,0 +1,11 @@
+[Unit]
+Description=PostgreSQL backup to S3
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/backup-scripts/bd-backup.sh
+User=root
+
+[Install]
+WantedBy=multi-user.target

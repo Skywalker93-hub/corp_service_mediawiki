@@ -1,0 +1,11 @@
+[Unit]
+Description=MediaWiki Configuration backup to S3
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/backup-scripts/config-backup.sh
+User=root
+
+[Install]
+WantedBy=multi-user.target

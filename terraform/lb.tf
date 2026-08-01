@@ -4,7 +4,7 @@ resource "aws_lb" "proxy_alb" {
   internal           = true
   load_balancer_type = "application"
   security_groups    = [aws_security_group.sg_alb.id]
-  subnets            = [
+  subnets = [
     aws_subnet.private_subnet_a.id,
     aws_subnet.subnet2.id,
     aws_subnet.subnet3.id
@@ -17,6 +17,19 @@ resource "aws_lb" "proxy_alb" {
   }
 }
 
+// Listener for HTTP for lb
+resource "aws_lb_listener" "proxy_listener_http" {
+  load_balancer_arn = aws_lb.proxy_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.proxy_alb_tg.arn
+  }
+}
+
+
 // Target Group for HTTP
 resource "aws_lb_target_group" "proxy_alb_tg" {
   name     = "proxy-alb-tg-int"
@@ -24,6 +37,7 @@ resource "aws_lb_target_group" "proxy_alb_tg" {
   protocol = "HTTP"
   vpc_id   = aws_vpc.my_net.id
 
+  # for instanses  
   health_check {
     protocol            = "HTTP"
     path                = "/index.php?title=Main_Page"
@@ -35,18 +49,6 @@ resource "aws_lb_target_group" "proxy_alb_tg" {
 
   tags = {
     Name = "proxy-alb-tg-int"
-  }
-}
-
-// Listener for HTTP
-resource "aws_lb_listener" "proxy_listener_http" {
-  load_balancer_arn = aws_lb.proxy_alb.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.proxy_alb_tg.arn
   }
 }
 
