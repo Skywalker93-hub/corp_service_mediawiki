@@ -39,7 +39,7 @@ $wgMetaNamespace = 'Corp_Wiki';
 $wgScriptPath = '';
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = 'http://internal-proxy-alb-int-189981902.eu-west-1.elb.amazonaws.com';
+$wgServer = '{{ wg_server_url | default("http://internal-proxy-alb.eu-west-1.elb.amazonaws.com") }}';
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
@@ -66,9 +66,9 @@ $wgEmailAuthentication = true;
 ## Database settings
 $wgDBtype = 'postgres';
 $wgDBserver = '127.0.0.1';
-$wgDBname = 'mediawikidb';
-$wgDBuser = 'mediawikiuser';
-$wgDBpassword = '1234';
+$wgDBname = '{{ db_name | default("mediawikidb") }}';
+$wgDBuser = '{{ db_user | default("mediawikiuser") }}';
+$wgDBpassword = '{{ db_password | default("CHANGE_ME") }}';
 
 # Postgres specific settings
 $wgDBport = "5433";
@@ -109,14 +109,14 @@ $wgLocaltimezone = 'UTC';
 ## be publicly accessible from the web.
 #$wgCacheDirectory = "$IP/cache";
 
-$wgSecretKey = '2b32886295bb18105903338278223cf5f9d2d58731e4b9463d82bdb1582e8cb8';
+$wgSecretKey = '{{ mediawiki_secret_key | default("CHANGE_ME_WITH_64_CHARACTER_RANDOM_HEX_SECRET_KEY") }}';
 
 # Changing this will log out all existing sessions.
 $wgAuthenticationTokenVersion = '1';
 
 # Site upgrade key. Must be set to a string (default provided) to turn on the
 # web installer while LocalSettings.php is in place
-$wgUpgradeKey = '91fbb1ece2c43aa6';
+$wgUpgradeKey = '{{ mediawiki_upgrade_key | default("CHANGE_ME_UPGRADE_KEY") }}';
 
 ## For attaching licensing metadata to pages, and displaying an
 ## appropriate copyright notice / icon. GNU Free Documentation

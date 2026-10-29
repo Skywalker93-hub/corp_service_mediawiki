@@ -140,7 +140,8 @@ resource "aws_security_group" "sg_alb" {
   }
 }
 
-// Security Group for webs
+// Default VPC Security Group
 data "aws_security_group" "default" {
-  id = "sg-00de35990bf2954e4"
+  vpc_id = aws_vpc.my_net.id
+  name   = "default"
 }

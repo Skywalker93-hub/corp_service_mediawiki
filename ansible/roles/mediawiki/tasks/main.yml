@@ -50,7 +50,7 @@
 - name: Mount EFS volume for MediaWiki images
   mount:
     path: /var/www/html/mediawiki-1.42.1/images
-    src: fs-0bb7a3d6c19aa38cd.efs.eu-west-1.amazonaws.com:/mediawiki
+    src: "{{ efs_dns_name | default('fs-xxxxxxxxxxxxxxxxx.efs.eu-west-1.amazonaws.com') }}:/mediawiki"
     fstype: nfs4
     opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev
     state: mounted

@@ -1,6 +1,6 @@
 #!/bin/bash
 DATE=$(date +%F_%H-%M)
-export PGPASSWORD="1234"
-pg_dump -h 127.0.0.1 -p 5433 -U mediawikiuser -Ft mediawikidb > /tmp/bd-backup-{{ inventory_hostname }}-$DATE.tar
-aws s3 cp /tmp/bd-backup-{{ inventory_hostname }}-$DATE.tar s3://mediawiki-test-backup/bd/
+export PGPASSWORD="{{ db_password | default('CHANGE_ME') }}"
+pg_dump -h 127.0.0.1 -p 5433 -U {{ db_user | default('mediawikiuser') }} -Ft {{ db_name | default('mediawikidb') }} > /tmp/bd-backup-{{ inventory_hostname }}-$DATE.tar
+aws s3 cp /tmp/bd-backup-{{ inventory_hostname }}-$DATE.tar s3://{{ s3_backup_bucket | default('mediawiki-test-backup') }}/bd/
 rm /tmp/bd-backup-{{ inventory_hostname }}-$DATE.tar
